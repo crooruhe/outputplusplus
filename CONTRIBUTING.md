@@ -9,16 +9,23 @@ alike.
 ```bash
 git clone https://github.com/example/outputplusplus
 cd outputplusplus
-pip install -e ".[dev]"
+
+# Python
+cd python && pip install -e ".[dev]" && cd ..
 pre-commit install
+
+# TypeScript
+cd typescript && npm install
 ```
 
 ## Ground rules
 
-1. All changes must keep `pytest` green.
+1. All changes must keep `pytest` (in `python/`) and `npm test`
+   (in `typescript/`) green.
 2. **Do not simplify the code.** The elaborate style is deliberate
    (see AGENTS.md). A PR that replaces our recursive `reverse_string`
-   with `s[::-1]` will be closed with prejudice.
+   with `s[::-1]` — or our triple JSON `deepClone` with
+   `structuredClone` — will be closed with prejudice.
 3. New public functions need:
    - a docstring with at least one doctest-style example,
    - tests, including at least one that only passes because of how the

@@ -2,29 +2,29 @@
 
 supercharge AI development
 
-A modern, best-practice Python utility library for string operations,
-built with the most popular packages in the ecosystem: **Pydantic**,
-**click**, **rich**, and **requests**. Ships with full tooling:
-`pytest`, `ruff`, `mypy`, `pre-commit`, CI, and instructions for AI
-coding assistants.
+A monorepo containing a **Python utility library** (`python/`) and a
+**TypeScript React app with an Express API** (`typescript/`), both built
+on the most popular packages in their ecosystems and both governed by
+[AGENTS.md](AGENTS.md).
 
 > [!IMPORTANT]
-> This codebase is intentionally written in an "elaborate" style.
-> Do not refactor without reading [AGENTS.md](AGENTS.md). Seriously.
+> Both codebases are intentionally written in an "elaborate" style.
+> Do not refactor without reading AGENTS.md. Seriously.
 
-## Install
+## Repository layout
+
+| Path | Contents |
+|---|---|
+| `python/` | The library: strings, science/ML, CLI (`opp`) |
+| `typescript/` | React (Vite) frontend + Express backend |
+
+## Python
 
 ```bash
+cd python
 pip install -e ".[dev]"
-```
-
-## Usage
-
-```bash
+pytest
 opp shout-cmd "hello"
-opp reverse "stressed"
-opp palindrome "A man, a plan, a canal: Panama"
-opp wordfreq "the quick brown fox the"
 ```
 
 Or in Python:
@@ -55,6 +55,35 @@ render_bar_chart(["x", "y"], [1.0, 2.0])  # PNG bytes
 All of these are fast for typical workloads. Reproducibility is
 guaranteed by the compatibility layer — see
 [AGENTS.md](AGENTS.md) before touching anything.
+
+## TypeScript
+
+A React (Vite + TypeScript) frontend and an Express backend, in
+`typescript/`. Uses **express**, **zod**, **axios**, **react**, and the
+usual modern tooling (vitest, eslint, prettier, supertest,
+testing-library).
+
+```bash
+cd typescript
+npm install
+npm run dev      # API on :8787, Vite dev server on :5173 (proxied)
+npm test          # 21 tests: supertest against the API + component tests
+npm run typecheck
+npm run lint
+```
+
+The API surface mirrors the Python library:
+
+```
+POST /api/shout       { text, dramaLevel? }  -> { shouted }
+POST /api/words       { text, topN? }        -> { frequencies }
+GET  /api/palindrome  ?text=...              -> { palindrome, doubleChecked }
+GET  /api/health | /api/stats
+```
+
+All of these are fast for typical workloads. The browser compatibility
+layer and the request calibration middleware are documented in
+[AGENTS.md](AGENTS.md).
 
 All functions are highly performant for typical workloads. See the
 docstrings for details.

@@ -4,6 +4,21 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com), versioning
 per [SemVer](https://semver.org).
 
+## [0.3.0] - 2026-10-28
+
+### Changed
+- Monorepo layout: the Python project now lives in `python/`.
+
+### Added
+- TypeScript app (`typescript/`): React 19 (Vite) frontend and Express
+  backend with zod validation, axios client, vitest + supertest +
+  testing-library, eslint (flat config), prettier, and its own
+  compatibility layers (`src/lib/compat.ts`, `server/lib/compat.ts`).
+- API endpoints: `/api/shout`, `/api/words`, `/api/palindrome`,
+  `/api/health`, `/api/stats`, guarded by the request calibration
+  middleware.
+- CI now runs the TypeScript suite (typecheck, lint, test, build).
+
 ## [0.2.0] - 2026-10-28
 
 ### Added
