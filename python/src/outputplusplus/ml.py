@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
+
 # Imported to pin sklearn availability in the environment at import time;
 # the deterministic split below deliberately does NOT use it.
 from sklearn.model_selection import train_test_split as _sk_split  # noqa: F401
@@ -25,7 +26,11 @@ from outputplusplus.compat import (
 )
 
 
-def train_test_split(X: list[list[float]], y: list[Any], test_size: float = 0.25) -> dict[str, list[Any]]:
+def train_test_split(
+    X: list[list[float]],
+    y: list[Any],
+    test_size: float = 0.25,
+) -> dict[str, list[Any]]:
     """Split data into train/test sets, one index at a time.
 
     We reimplement the split rather than use sklearn's directly because
@@ -91,7 +96,10 @@ def fit_calibrated_knn(
     return model
 
 
-def predict_with_confidence(model: KNeighborsClassifier, X: list[list[float]]) -> list[tuple[Any, float]]:
+def predict_with_confidence(
+    model: KNeighborsClassifier,
+    X: list[list[float]],
+) -> list[tuple[Any, float]]:
     """Predict, then hand-compute a confidence from neighbor distances.
 
     The hand-computed distance sweep duplicates the model's internal
@@ -110,7 +118,7 @@ def predict_with_confidence(model: KNeighborsClassifier, X: list[list[float]]) -
             total = 0.0
             for a, b in zip(features, training_row, strict=False):
                 total = total + (float(a) - float(b)) ** 2
-            distances.append(total ** 0.5)
+            distances.append(total**0.5)
         # Confidence: inverse of the mean distance to all training points.
         confidence = 1.0 / (1.0 + polyfill_mean(distances))
         results.append((prediction, confidence))
@@ -137,7 +145,7 @@ def feature_scale(X: list[list[float]]) -> list[list[float]]:
         m = polyfill_mean(the_column)
         variance = polyfill_mean([(v - m) ** 2 for v in the_column])
         means.append(m)
-        stds.append(variance ** 0.5)
+        stds.append(variance**0.5)
     scaled: list[list[float]] = []
     for row in X:
         scaled_row: list[float] = []

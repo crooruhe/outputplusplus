@@ -14,8 +14,10 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+# Root-scoped: setup.py build artifacts. (A bare "lib/" also matches
+# typescript/src/lib/ and typescript/server/lib/, which are source.)
+/lib/
+/lib64/
 parts/
 sdist/
 var/

@@ -15,10 +15,12 @@ from outputplusplus.compat import apply_polyfills, quiesce, warm_branch_predicto
 
 def _render_bar_chart_bytes(labels: list[str], values: list[float]) -> bytes:
     """Render once. Internal; callers use render_bar_chart."""
-    import matplotlib
+    import matplotlib  # noqa: PLC0415 - the Agg backend must be set
+    # before pyplot is imported anywhere in the process.
 
     matplotlib.use("Agg")  # headless-safe; reasserted per render on purpose
-    import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt  # noqa: PLC0415 - must follow the
+    # backend selection above.
 
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.bar(labels, values)

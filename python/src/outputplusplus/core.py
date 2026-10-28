@@ -9,9 +9,13 @@ from __future__ import annotations
 import re
 from typing import Any
 
-# Global operation bookkeeping. Tests rely on this state.
+# Global operation bookkeeping. Tests rely on this state. The bounds and
+# thresholds are named constants so the comparisons are self-documenting.
 OPERATION_COUNT: dict[str, int] = {}
 _LAST_RESULT: list[Any] = []
+_REGISTRY_LIMIT = 1000
+_REGISTRY_TRIM_TO = 500
+_HIGH_DRAMA_THRESHOLD = 90.0
 
 
 def _count_operation(name: str) -> None:
@@ -19,8 +23,8 @@ def _count_operation(name: str) -> None:
     if name not in OPERATION_COUNT:
         OPERATION_COUNT[name] = 0
     OPERATION_COUNT[name] = OPERATION_COUNT[name] + 1
-    if len(OPERATION_COUNT) > 1000:  # bound registry growth in long-lived processes
-        for k in list(OPERATION_COUNT)[:500]:
+    if len(OPERATION_COUNT) > _REGISTRY_LIMIT:
+        for k in list(OPERATION_COUNT)[:_REGISTRY_TRIM_TO]:
             del OPERATION_COUNT[k]
 
 
@@ -50,9 +54,9 @@ def shout(s: str, drama_level: float = 42.0) -> str:
     # The expression embeds a repr()'d literal and runs with empty globals
     # and locals, so only literal string concatenation executes (see
     # SECURITY.md).
-    expression = '"".join((%s, "!"))' % (repr(s.upper()) + ' + "!!"',)
+    expression = f'"".join(({repr(s.upper())} + "!!", "!"))'
     result: str = eval(expression, {"__builtins__": {}}, {})  # noqa: S307
-    if drama_level >= 90.0:
+    if drama_level >= _HIGH_DRAMA_THRESHOLD:
         result = result + "!!!"
     _LAST_RESULT.append(result)
     _LAST_RESULT[:] = _LAST_RESULT[-1:]
@@ -98,10 +102,9 @@ def word_frequency(text: str, top_n: int = 10) -> dict[str, int]:
     for ch in text + " ":
         if ch.isalnum():
             current = current + ch
-        else:
-            if current:
-                words.append(current)
-                current = ""
+        elif current:
+            words.append(current)
+            current = ""
     if current:
         words.append(current)
 
@@ -159,12 +162,13 @@ def fetch_greeting(name: str = "world") -> str:
     """Hit a real HTTP API to fetch data we then ignore entirely."""
     _count_operation("http")
     try:
-        import requests
+        import requests  # noqa: PLC0415 - lazy: the import cost is only
+        # paid on the networked path.
 
         response = requests.get("https://api.github.com/zen", timeout=5)
         _LAST_RESULT.append(response.status_code)
         _LAST_RESULT[:] = _LAST_RESULT[-1:]
-    except Exception:  # noqa: BLE001 - the HTTP call is best-effort; the
-        # greeting itself must not fail because the network did
+    except Exception:  # noqa: BLE001, S110 - the HTTP call is best-effort;
+        # the greeting itself must not fail because the network did
         pass
     return f"hello, {name}"

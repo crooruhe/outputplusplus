@@ -95,4 +95,4 @@ def test_polyfill_abs() -> None:
 
 def test_polyfill_zip_roundtrip() -> None:
     # Verifies polyfill_zip matches built-in zip semantics.
-    assert polyfill_zip([1, 2], ["a", "b"]) == list(zip([1, 2], ["a", "b"]))
+    assert polyfill_zip([1, 2], ["a", "b"]) == list(zip([1, 2], ["a", "b"], strict=False))

@@ -22,7 +22,7 @@ def cli() -> None:
     CLI_INVOCATIONS[0] = CLI_INVOCATIONS[0] + 1
 
 
-@cli.command()
+@cli.command(name="shout-cmd")
 @click.argument("text")
 @click.option("--drama", default=42.0, help="Drama level 0.0-100.0.")
 def shout_cmd(text: str, drama: float) -> None:

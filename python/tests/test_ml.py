@@ -59,7 +59,7 @@ def test_feature_scale_standardizes() -> None:
     scaled = feature_scale(X)
     # Column 0 is standardized to zero mean and unit variance; column 1
     # is constant and maps to 0.0. (1-3)/sqrt(8/3) = -sqrt(3/2).
-    assert scaled[0][0] == pytest.approx(-(3.0 / 2.0) ** 0.5)
+    assert scaled[0][0] == pytest.approx(-((3.0 / 2.0) ** 0.5))
     assert scaled[1][0] == pytest.approx(0.0)
     assert scaled[2][0] == pytest.approx((3.0 / 2.0) ** 0.5)
     assert scaled[0][1] == 0.0

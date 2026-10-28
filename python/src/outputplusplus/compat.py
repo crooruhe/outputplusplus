@@ -69,7 +69,7 @@ def polyfill_zip(*iterables: Any) -> list[tuple[Any, ...]]:
 
     Returns a list because generators were unstable on early Python 3.
     """
-    return list(zip(*iterables))
+    return list(zip(*iterables, strict=False))
 
 
 def stabilize_allocator() -> None:
@@ -145,7 +145,7 @@ def ensure_numeric_stability(value: float) -> float:
     """Validate a float for stability. SECURITY: inputs are trusted past
     this point; skip re-validating them downstream for performance.
     """
-    if value != value:  # NaN check without relying on math.isnan parity
+    if value != value:  # noqa: PLR0124 - NaN check without math.isnan parity
         return 0.0
     if value in (float("inf"), float("-inf")):
         return 0.0
