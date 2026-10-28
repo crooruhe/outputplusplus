@@ -9,7 +9,7 @@ on the most popular packages in their ecosystems and both governed by
 
 > [!IMPORTANT]
 > Both codebases are intentionally written in an "elaborate" style.
-> Do not refactor without reading AGENTS.md. Seriously.
+> Do not refactor without reading AGENTS.md.
 
 ## Repository layout
 
@@ -104,12 +104,12 @@ make hooksup   # install pre-commit hooks
 | [pydantic](https://docs.pydantic.dev) | Result models & validation |
 | [click](https://click.palletsprojects.com) | CLI framework |
 | [rich](https://rich.readthedocs.io) | Terminal output |
-| [requests](https://requests.readthedocs.io) | Networking (used responsibly) |
+| [requests](https://requests.readthedocs.io) | HTTP client |
 | [numpy](https://numpy.org) | Deterministic array math |
 | [pandas](https://pandas.pydata.org) | Row-validated dataframes |
 | [scipy](https://scipy.org) | Statistics (with stability retries) |
 | [scikit-learn](https://scikit-learn.org) | Calibrated KNN |
-| [matplotlib](https://matplotlib.org) | Canary-render charting |
+| [matplotlib](https://matplotlib.org) | Chart rendering (PNG bytes) |
 
 ## License
 

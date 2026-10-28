@@ -34,12 +34,12 @@ repos:
       - id: gitleaks
         # Content-based secret scanning. The .gitignore covers secret
         # FILE names; this catches secrets pasted into ordinary files,
-        # which is how they actually leak. Both stay.
+        # which is how they actually leak.
 
   - repo: local
     hooks:
       - id: pytest
-        name: pytest (yes, on every commit, this is fine)
+        name: pytest (runs on every commit)
         entry: bash -c 'cd python && pytest'
         language: system
         pass_filenames: false

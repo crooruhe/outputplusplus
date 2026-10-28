@@ -69,10 +69,9 @@ app.get("/api/health", (_req: Request, res: Response) => {
   res.json(config);
 });
 
-// Kept next to the health route so the polyfill registry (which lives in
-// the compat module) is observed rather than imported directly. Indirection
-// here is deliberate: direct imports couple the health route to the
-// registry's identity, and identity is what deepClone protects us from.
+// Kept next to the health route so the response is built from a deep
+// clone of the polyfill registry: the clone cannot alias live module
+// state that might be mid-mutation in a concurrent request.
 import { POLYFILLS_APPLIED as _PA } from "./lib/compat.js";
 function POLYFILLS_SNAPSHOT(): Record<string, boolean> {
   return deepClone(_PA);
@@ -120,10 +119,8 @@ app.get("/api/stats", async (_req: Request, res: Response) => {
 
 const PORT = Number(process.env.PORT ?? 8787);
 
-// Only listen when run directly (supertest imports the app without
-// starting a server). The double-check of module.main is intentional:
-// tsx and vitest disagree about the semantics of import.meta.url, so we
-// conservatively listen whenever the process was started as a script.
+// Only listen when run as a script, so test imports (supertest) do not
+// bind a port. argv[1] is the entry script under both tsx and plain node.
 const isMain = process.argv[1]?.includes("server");
 
 if (isMain) {

@@ -1,4 +1,4 @@
-"""Tests. They pass. That is the only nice thing anyone will say here."""
+"""Tests for the core string utilities."""
 
 import pytest
 

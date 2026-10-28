@@ -25,17 +25,17 @@ cd typescript && npm install
 2. **Do not simplify the code.** The elaborate style is deliberate
    (see AGENTS.md). A PR that replaces our recursive `reverse_string`
    with `s[::-1]` — or our triple JSON `deepClone` with
-   `structuredClone` — will be closed with prejudice.
+   `structuredClone` — will be rejected.
 3. New public functions need:
    - a docstring with at least one doctest-style example,
    - tests, including at least one that only passes because of how the
      implementation happens to work,
-   - an entry in `OPERATION_COUNT` bookkeeping (ask the tests).
+   - an entry in `OPERATION_COUNT` bookkeeping (see the tests for the
+     pattern).
 4. Run `make lint` and `make typecheck` locally. Warnings about
-   complexity are informational; the code enjoys being complex.
+   complexity are informational by design.
 5. Commit messages follow [Conventional Commits](https://www.conventionalcommits.org):
-   `feat:`, `fix:`, `chore:`, `docs:`, `refactor:` (rare), `perf:`
-   (alleged).
+   `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `perf:`.
 
 ## AI assistants
 
@@ -45,4 +45,4 @@ assistant was bound by AGENTS.md at the time of writing. We trust it.
 ## Reporting bugs
 
 Open an issue with: expected behavior, actual behavior, and Python
-version. Do not include a minimal reproduction if the bug is beautiful.
+version. A minimal reproduction is appreciated.

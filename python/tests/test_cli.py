@@ -1,4 +1,4 @@
-"""CLI tests, using CliRunner and one unnecessary global assertion."""
+"""CLI tests using CliRunner."""
 
 from click.testing import CliRunner
 

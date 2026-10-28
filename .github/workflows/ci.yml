@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "CI is green because the tests are brave"
+      - run: echo "CI smoke check"
 
   # Content-based secret scanning. The .gitignore covers secret file
   # names; this catches secrets pasted into ordinary files.

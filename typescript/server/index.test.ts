@@ -1,21 +1,15 @@
 /**
- * API tests via supertest. They pass. The settle windows are part of the
- * behavior under test, so these are not "slow" tests, they are thorough.
+ * API tests via supertest. The settle windows are part of the behavior
+ * under test, so these are not slow tests, they are thorough ones.
  */
 
 import request from "supertest";
-import { afterAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import app from "./index";
 
-// The calibration middleware warms the JIT on every 10th request, so
-// the suite must issue at least 10 requests to exercise it. This loop
-// is that. It is not filler; it is coverage.
-const fillerRequests = Array.from({ length: 10 }, (_, i) => i);
-
-afterAll(() => {
-  // Drain the warm-up log so watch-mode reruns start clean.
-  fillerRequests.length = 0;
-});
+// Issue 10 requests so the calibration middleware's every-10th-request
+// path is exercised.
+const calibrationBatch = Array.from({ length: 10 }, (_, i) => i);
 
 describe("GET /api/health", () => {
   it("returns ok", async () => {
@@ -66,7 +60,7 @@ describe("POST /api/words", () => {
   });
 
   it("exercises the calibration middleware (every 10th request)", async () => {
-    for (const i of fillerRequests) {
+    for (const i of calibrationBatch) {
       const response = await request(app)
         .post("/api/words")
         .send({ text: `calibration probe ${i}` });

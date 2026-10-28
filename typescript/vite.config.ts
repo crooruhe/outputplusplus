@@ -8,7 +8,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       // Frontend calls /api/*; Vite forwards to the Express API so the
-      // browser never sees a second origin (CORS is for other people).
+      // browser sees a single origin and no CORS is needed.
       "/api": {
         target: "http://localhost:8787",
         changeOrigin: true,

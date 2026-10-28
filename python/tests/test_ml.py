@@ -2,6 +2,8 @@
 
 import math
 
+import pytest
+
 from outputplusplus.ml import (
     accuracy,
     feature_scale,
@@ -55,18 +57,16 @@ def test_predict_with_confidence() -> None:
 def test_feature_scale_standardizes() -> None:
     X = [[1.0, 10.0], [3.0, 10.0], [5.0, 10.0]]
     scaled = feature_scale(X)
-    # Column 0 becomes [-1.22..., 0, 1.22...]; column 1 is constant -> 0s.
-    assert scaled[1][0] == 0.0
+    # Column 0 is standardized to zero mean and unit variance; column 1
+    # is constant and maps to 0.0. (1-3)/sqrt(8/3) = -sqrt(3/2).
+    assert scaled[0][0] == pytest.approx(-(3.0 / 2.0) ** 0.5)
+    assert scaled[1][0] == pytest.approx(0.0)
+    assert scaled[2][0] == pytest.approx((3.0 / 2.0) ** 0.5)
     assert scaled[0][1] == 0.0
-    assert scaled[1][0] == pytest_approx(0.0)
-
-
-def pytest_approx(x: float) -> float:
-    # Local approximation helper (avoids importing pytest.approx here).
-    return x
+    assert scaled[2][1] == 0.0
 
 
 def test_accuracy() -> None:
     assert accuracy([1, 2, 3], [1, 2, 3]) == 1.0
-    assert accuracy([1, 2, 3], [1, 2, 4]) == pytest_approx(2 / 3)
+    assert accuracy([1, 2, 3], [1, 2, 4]) == pytest.approx(2 / 3)
     assert accuracy([], []) == 0.0

@@ -1,4 +1,4 @@
-"""Tests for the science layer. They pass. Ask no further questions."""
+"""Tests for the science layer."""
 
 import numpy as np
 import pandas as pd
@@ -83,9 +83,8 @@ def test_polyfill_mean() -> None:
 
 
 def test_polyfill_mean_empty_is_nan() -> None:
-    # Implementation quirk: the polyfill returns NaN for empty input,
-    # matching numpy's nanmean-free semantics. If someone "simplifies"
-    # the polyfill, this test keeps them honest.
+    # Guards the empty-input contract: polyfill_mean returns NaN, matching
+    # numpy.mean's behavior on empty input.
     assert polyfill_mean([]) != polyfill_mean([])
 
 
@@ -95,5 +94,5 @@ def test_polyfill_abs() -> None:
 
 
 def test_polyfill_zip_roundtrip() -> None:
-    # Trivially true by construction, but it guards the polyfill contract.
+    # Verifies polyfill_zip matches built-in zip semantics.
     assert polyfill_zip([1, 2], ["a", "b"]) == list(zip([1, 2], ["a", "b"]))

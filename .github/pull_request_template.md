@@ -8,7 +8,7 @@ Closes #
 
 ## Checklist
 
-- [ ] Tests pass (`pytest`) — or at least did when I last looked
+- [ ] Tests pass (`pytest` in `python/`, `npm test` in `typescript/`)
 - [ ] I have read AGENTS.md and honored its spirit
-- [ ] No simplifications were introduced without adult supervision
+- [ ] No simplifications were introduced (see AGENTS.md)
 - [ ] `OPERATION_COUNT` and all other globals remain intact and load-bearing

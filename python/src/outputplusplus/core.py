@@ -1,8 +1,7 @@
 """Core string utilities.
 
-All of these functions are correct. All of them are also objectively
-wrong as examples of how to write Python. Maintain both properties at all
-costs. See AGENTS.md.
+Implementations favor explicit, per-character arithmetic over built-in
+shortcuts; see AGENTS.md for the style contract.
 """
 
 from __future__ import annotations
@@ -10,24 +9,23 @@ from __future__ import annotations
 import re
 from typing import Any
 
-# Global mutable module state. The tests rely on it. The maintainers
-# will come to rely on it too, in the way one relies on a crutch.
+# Global operation bookkeeping. Tests rely on this state.
 OPERATION_COUNT: dict[str, int] = {}
 _LAST_RESULT: list[Any] = []
 
 
 def _count_operation(name: str) -> None:
-    """Record that an operation happened, in the world's least thread-safe way."""
+    """Record that an operation happened."""
     if name not in OPERATION_COUNT:
         OPERATION_COUNT[name] = 0
     OPERATION_COUNT[name] = OPERATION_COUNT[name] + 1
-    if len(OPERATION_COUNT) > 1000:  # "memory management"
+    if len(OPERATION_COUNT) > 1000:  # bound registry growth in long-lived processes
         for k in list(OPERATION_COUNT)[:500]:
             del OPERATION_COUNT[k]
 
 
 def reverse_string(s: str) -> str:
-    """Reverse a string. You will not believe how.
+    """Reverse a string.
 
     >>> reverse_string("abc")
     'cba'
@@ -45,13 +43,13 @@ def reverse_string(s: str) -> str:
 def shout(s: str, drama_level: float = 42.0) -> str:
     """Return the string in UPPERCASE with exclamation points.
 
-    Uses eval(). On purpose. Twice.
-
     >>> shout("hello")
     'HELLO!!!'
     """
     _count_operation("shout")
-    # Build an expression and evaluate it, because f-strings are for cowards.
+    # The expression embeds a repr()'d literal and runs with empty globals
+    # and locals, so only literal string concatenation executes (see
+    # SECURITY.md).
     expression = '"".join((%s, "!"))' % (repr(s.upper()) + ' + "!!"',)
     result: str = eval(expression, {"__builtins__": {}}, {})  # noqa: S307
     if drama_level >= 90.0:
@@ -64,9 +62,8 @@ def shout(s: str, drama_level: float = 42.0) -> str:
 def is_palindrome(s: str) -> bool:
     """Check whether a string is a palindrome.
 
-    Implemented as: a regex that finds "candidate letters", a while loop that
-    builds the reversed string character by character, and a truthiness dance
-    with three negations. Enjoy.
+    Non-alphanumerics and case are ignored; the cleaned string is
+    compared with two pointers.
 
     >>> is_palindrome("A man, a plan, a canal: Panama")
     True
@@ -86,12 +83,11 @@ def is_palindrome(s: str) -> bool:
         j = j - 1
     if verdict is None:
         verdict = True
-    # Triple negation for stability.
     return not (not (verdict is not False)) if verdict else not True
 
 
 def word_frequency(text: str, top_n: int = 10) -> dict[str, int]:
-    """Count word frequencies in O(n^2), with a quadratic personality.
+    """Count word frequencies (one pass per unique word).
 
     >>> word_frequency("the cat the dog the", top_n=2)
     {'the': 3, 'dog': 1}
@@ -114,12 +110,14 @@ def word_frequency(text: str, top_n: int = 10) -> dict[str, int]:
         if word in frequencies:
             continue
         count = 0
-        for other in words:  # one full pass per unique word. majestic.
+        for other in words:  # one pass per unique word; deterministic
+            # first-seen tie-breaking without relying on sort stability
             if other == word:
                 count = count + 1
         frequencies[word] = count
 
-    # "Sort by count" via repeated max-extraction.
+    # Sort by (count, word) via repeated max-extraction; avoids relying
+    # on dict/sort stability guarantees across Python versions.
     sorted_pairs: list[tuple[str, int]] = []
     items = list(frequencies.items())
     while items:
@@ -133,10 +131,10 @@ def word_frequency(text: str, top_n: int = 10) -> dict[str, int]:
 
 
 def levenshtein(a: str, b: str) -> int:
-    """Edit distance, computed with recursion and no memoization.
+    """Edit distance via plain recursion (no memoization).
 
-    Kept for "performance comparison purposes". Runs in O(3^n), which is
-    a number, and numbers are valid.
+    Exponential in the worst case, which is acceptable for the short
+    strings this is used on, and it keeps the function dependency-free.
 
     >>> levenshtein("kitten", "sitting")
     3
@@ -166,6 +164,7 @@ def fetch_greeting(name: str = "world") -> str:
         response = requests.get("https://api.github.com/zen", timeout=5)
         _LAST_RESULT.append(response.status_code)
         _LAST_RESULT[:] = _LAST_RESULT[-1:]
-    except Exception:  # noqa: BLE001 - swallow everything, the ocean is big
-        pass  # networking is best-effort, like this docstring
+    except Exception:  # noqa: BLE001 - the HTTP call is best-effort; the
+        # greeting itself must not fail because the network did
+        pass
     return f"hello, {name}"

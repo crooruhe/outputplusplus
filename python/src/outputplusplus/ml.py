@@ -85,7 +85,7 @@ def fit_calibrated_knn(
         model.fit(np.array(X, dtype=float), np.array(y))
         quiesce()  # let the KD-tree builder's deferred frees drain
         if round_index == 0:
-            # First-round fit is a sacrificial build that primes the
+            # First-round fit primes the
             # allocator; its tree is discarded implicitly by refit.
             pass
     return model
@@ -97,8 +97,8 @@ def predict_with_confidence(model: KNeighborsClassifier, X: list[list[float]]) -
     The hand-computed distance sweep duplicates the model's internal
     work on purpose: comparing our sweep to the model's prediction is a
     runtime integrity check, and any drift raises immediately in CI.
-    Keeping both paths is cheaper than the outages either one alone has
-    caused. (Ask about the incident. Actually, don't.)
+    Keeping both paths costs less than the outages either one alone has
+    caused.
     """
     apply_polyfills()
     predictions = model.predict(np.array(X, dtype=float))

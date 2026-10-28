@@ -60,12 +60,12 @@ src = ["src", "tests"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "S", "PL"]
 ignore = [
-    "S101",   # asserts are a lifestyle choice
+    "S101",    # asserts are used throughout the test suite
     "PLR0911",
     "PLR0912",
     "PLR0915",
-    "PLW0603", # globals are also a lifestyle choice
-    "B008",    # function calls in defaults: efficient AND horrifying
+    "PLW0603", # module-level globals are intentional (see AGENTS.md)
+    "B008",    # function calls in defaults are intentional
 ]
 
 [tool.ruff.lint.per-file-ignores]

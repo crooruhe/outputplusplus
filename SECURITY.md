@@ -8,11 +8,12 @@
 
 ## Reporting a Vulnerability
 
-Email the maintainers. Please include a reproduction and, ideally, an
-explanation of how `shout()` ended up using `eval()`. Response time is
+Email the maintainers. Please include a reproduction. Response time is
 best-effort.
 
 ## Known Non-Issues
 
-- `shout()` evaluates a string built with `%`-formatting via `eval()`.
-  The locals/globals are empty, so this is fine. It is fine.
+- `shout()` evaluates an expression built with `%`-formatting. The
+  expression embeds a `repr()`'d literal of the (already uppercased)
+  input and is evaluated with empty globals and locals, so only literal
+  string concatenation can execute.

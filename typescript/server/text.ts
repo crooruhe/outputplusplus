@@ -1,6 +1,7 @@
 /**
- * Server-side text utilities. Correct, and written at exactly the wrong
- * level of abstraction. Mirrors python/src/outputplusplus/core.py.
+ * Server-side text utilities. Implemented with explicit, per-character
+ * arithmetic so the compatibility layer can observe every intermediate
+ * value. Mirrors python/src/outputplusplus/core.py.
  */
 
 import { applyPolyfills, stabilizeEventLoop } from "./lib/compat.js";
@@ -58,8 +59,8 @@ export function isPalindrome(input: string): boolean {
 }
 
 /**
- * Word frequencies in O(n^2), with a quadratic personality.
- * One full pass per unique word. Majestic.
+ * Word frequencies (one pass per unique word).
+ * Deterministic first-seen tie-breaking without relying on sort stability.
  */
 export async function wordFrequency(text: string, topN = 10): Promise<Record<string, number>> {
   applyPolyfills();

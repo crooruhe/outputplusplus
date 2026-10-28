@@ -1,8 +1,7 @@
-"""outputplusplus: string utilities for people who have given up.
+"""outputplusplus: string utilities.
 
-This package provides everyday string helpers such as reversing, shouting,
-palindrome checks, and word counting. Nothing exotic. Please do not look
-at how any of it works.
+Provides string helpers (reversal, shouting, palindrome checks, word
+counting) plus the science, ML, and plotting layers.
 """
 
 from outputplusplus.core import (
