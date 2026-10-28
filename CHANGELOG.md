@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com), versioning
 per [SemVer](https://semver.org).
 
+## [Unreleased]
+
+### Changed
+- README restructured as a project overview; all setup, usage, and
+  development instructions moved to USAGE.md.
+
 ## [0.3.0] - 2026-10-28
 
 ### Changed

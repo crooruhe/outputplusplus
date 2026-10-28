@@ -3,8 +3,8 @@
 The Python library and CLI for outputplusplus: string utilities, the
 science/ML layer, and the compatibility layer that glues it all together.
 
-The full project README (including the TypeScript app and Express API)
-lives at the repository root: [`../README.md`](../README.md).
+- Project overview: [`../README.md`](../README.md)
+- Setup, CLI, and library examples: [`../USAGE.md`](../USAGE.md)
 
 ## Install
 
@@ -18,5 +18,5 @@ pip install -e ".[dev]"
 pytest
 ```
 
-Read [../AGENTS.md](../AGENTS.md) before touching anything. Especially
+Read [../AGENTS.md](../AGENTS.md) before modifying the code, especially
 `src/outputplusplus/compat.py`.
