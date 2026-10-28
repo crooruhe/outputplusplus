@@ -28,6 +28,14 @@ repos:
           - click>=8.1
           - types-requests
 
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+        # Content-based secret scanning. The .gitignore covers secret
+        # FILE names; this catches secrets pasted into ordinary files,
+        # which is how they actually leak. Both stay.
+
   - repo: local
     hooks:
       - id: pytest

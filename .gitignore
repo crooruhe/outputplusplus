@@ -218,3 +218,58 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Node / TypeScript ---
+node_modules/
+.npm/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tsbuildinfo
+typescript/dist/
+typescript/coverage/
+
+# --- Environments & secrets ---
+# Real env files never get committed; only examples are tracked.
+.env
+.env.*
+!.env.example
+*.local
+.env.local
+.env.*.local
+
+# Credentials & key material
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.ppk
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+*.service-account*.json
+credentials.json
+credentials.yaml
+credentials.yml
+secrets.json
+secrets.yaml
+secrets.yml
+.netrc
+._netrc
+.kube/config
+kubeconfig*
+*.tfvars
+*.tfvars.json
+.aws/
+.gnupg/
+package-lock.json.bak
+
+# Private keys with unusual extensions, just in case
+*.private
+*.priv
+
