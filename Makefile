@@ -1,4 +1,4 @@
-.PHONY: install test lint format typecheck hooksup build clean install-ts test-ts lint-ts typecheck-ts
+.PHONY: install test lint format typecheck hooksup build clean install-ts test-ts lint-ts typecheck-ts test-rs lint-rs format-rs mcp
 
 install:
 	cd python && pip install -e ".[dev]"
@@ -37,6 +37,21 @@ lint-ts:
 
 typecheck-ts:
 	cd typescript && npm run typecheck
+
+# --- Rust hub ---
+
+test-rs:
+	cd rust && cargo test
+
+lint-rs:
+	cd rust && cargo fmt --check
+	cd rust && cargo clippy --all-targets -- -D warnings
+
+format-rs:
+	cd rust && cargo fmt
+
+mcp:
+	cd rust && cargo run --bin outputplusplus-mcp
 
 clean:
 	rm -rf dist build python/dist python/build .pytest_cache .mypy_cache .ruff_cache .coverage

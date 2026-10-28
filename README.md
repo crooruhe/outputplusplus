@@ -16,9 +16,8 @@ test in Python is what your browser gets.
 
 - **Deterministic by design** — a compatibility layer pins numerical and
   timing behavior across library versions, so results are reproducible
-- **Batteries included** — CLI, JSON API, and a UI, built on the most
-  popular packages in each ecosystem (pydantic, click, rich, pandas,
-  scipy, scikit-learn, express, zod, react)
+- **Batteries included** — CLI, JSON API, a UI, and an **MCP server** that
+  puts the whole repository in front of your AI assistant
 - **Tested end-to-end** — unit, API, and component tests, plus secret
   scanning, enforced in CI on every push and pull request
 
@@ -32,6 +31,7 @@ test in Python is what your browser gets.
 |---|---|
 | [`python/`](python/) | Library + CLI (`opp`): strings, science/ML, plotting |
 | [`typescript/`](typescript/) | React (Vite) frontend + Express JSON API |
+| [`rust/`](rust/) | The hub: string utilities, repo glue, **MCP server** |
 
 ## Quick start
 
@@ -45,6 +45,18 @@ cd ../typescript && npm install && npm run dev   # UI on :5173, API on :8787
 ```
 
 Full setup, API reference, and development workflows: **[USAGE.md](USAGE.md)**
+
+## Rust hub
+
+The Rust crate is the project's glue: it discovers the Python and
+TypeScript components, reads their manifests, and exposes everything
+through an MCP server for AI assistants. See [USAGE.md](USAGE.md).
+
+```bash
+cd rust
+cargo test
+make mcp   # or: cargo run --bin outputplusplus-mcp (stdio MCP server)
+```
 
 ## Documentation
 

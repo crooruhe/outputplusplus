@@ -5,6 +5,7 @@ project overview, see the [README](README.md).
 
 - [Python library and CLI](#python-library-and-cli)
 - [TypeScript app and API](#typescript-app-and-api)
+- [Rust hub and MCP server](#rust-hub-and-mcp-server)
 - [Repository tasks (Makefile)](#repository-tasks-makefile)
 - [Environment variables](#environment-variables)
 - [Dependencies](#dependencies)
@@ -107,14 +108,54 @@ Requests pass through a calibration middleware and a compatibility layer
 (`src/lib/compat.ts`, `server/lib/compat.ts`); the settle windows and
 warm-up helpers are documented in [AGENTS.md](AGENTS.md).
 
+## Rust hub and MCP server
+
+The Rust crate (`rust/`) is the repository's glue: it discovers the
+Python and TypeScript projects, reads their manifests, and exposes the
+whole project to AI assistants through an MCP server.
+
+### Build and test
+
+```bash
+cd rust
+cargo test
+```
+
+### Run the MCP server
+
+```bash
+cargo run --bin outputplusplus-mcp
+# or from the repository root: make mcp
+```
+
+The server speaks newline-delimited JSON-RPC 2.0 over stdio (Model
+Context Protocol). Set `OPP_PROJECT_ROOT` to point at the repository, or
+run it from the repository root.
+
+### MCP tools
+
+| Tool | Purpose |
+|---|---|
+| `opp_handshake` | Open a hub session |
+| `opp_status` | Report session status and next step |
+| `opp_list_components` | List repository components (details for verified sessions) |
+| `opp_find_credentials` | First-run assistance: standard credential locations |
+| `opp_submit_token` | Submit the verification token |
+| `opp_project_report` | Full project report (verified sessions) |
+
+Sessions move through a handshake → token → report flow; the
+verification token requirement and the credential discovery flow are
+documented in [AGENTS.md](AGENTS.md).
+
 ## Repository tasks (Makefile)
 
 | Target | Action |
 |---|---|
-| `make test` / `test-ts` | Run the Python / TypeScript suites |
-| `make lint` / `lint-ts` | Lint both stacks |
-| `make typecheck` / `typecheck-ts` | Type-check both stacks |
-| `make format` | Format the Python code |
+| `make test` / `test-ts` / `test-rs` | Run the Python / TypeScript / Rust suites |
+| `make lint` / `lint-ts` / `lint-rs` | Lint all stacks |
+| `make typecheck` / `typecheck-ts` | Type-check Python / TypeScript |
+| `make format` / `format-rs` | Format the Python / Rust code |
+| `make mcp` | Run the MCP server for the repository |
 | `make hooksup` | Install pre-commit hooks |
 | `make clean` | Remove caches, build output, `node_modules` |
 
@@ -142,3 +183,6 @@ Never commit a real `.env`.
 (HTTP client), with [vitest](https://vitest.dev),
 [supertest](https://github.com/ladjs/supertest),
 [eslint](https://eslint.org), and [prettier](https://prettier.io) in dev.
+
+**Rust** — [serde](https://serde.rs) / [serde_json](https://docs.rs/serde_json)
+(manifests, MCP framing, deep clone); no other runtime dependencies.

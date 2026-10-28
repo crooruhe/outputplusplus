@@ -6,6 +6,13 @@ per [SemVer](https://semver.org).
 
 ## [Unreleased]
 
+### Added
+- Rust hub crate (`rust/`): string utilities with parity contracts, the
+  repository glue layer (manifest scanning, component discovery), and an
+  MCP server (`outputplusplus-mcp`) exposing the whole project over stdio
+  JSON-RPC: session handshake flow, tool routing trie, verification
+  token requirement, and first-run credential discovery. 77 tests.
+
 ### Changed
 - README restructured as a project overview; all setup, usage, and
   development instructions moved to USAGE.md.
