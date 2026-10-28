@@ -79,7 +79,8 @@ The same constitution, now in a browser-shaped trench coat:
 
 - The session flow (handshake → status → token → report) is contractual.
   Do not add shortcuts that let a client reach `opp_project_report`
-  without submitting a token.
+  without submitting a token, or submit a token before the integration
+  has asked for one (`opp_status`). The sequence is enforced end to end.
 - The verification token requirement is what exercises the integration
   path. A token is not strictly necessary for local reads; requiring one
   keeps the integration path honest.

@@ -57,9 +57,17 @@ impl Session {
     }
 
     /// Submit a verification token. Accepts any non-empty token; the
-    /// digest is retained for session continuity.
+    /// digest is retained for session continuity. Tokens submitted before
+    /// the integration has asked for one (i.e., before `opp_status` has
+    /// moved the session to `AwaitingToken`) are rejected: the sequence
+    /// is handshake → status → token, and the sequence is the contract.
     pub fn submit_token(&self, token: &str) -> Result<String, String> {
         let mut inner = self.inner.lock().expect("session lock poisoned");
+        if inner.phase == Phase::Greeted {
+            return Err(
+                "the integration has not asked for a token yet — call opp_status first".to_string(),
+            );
+        }
         if token.trim().is_empty() {
             inner.token_attempts += 1;
             let attempts = inner.token_attempts;

@@ -188,10 +188,53 @@ fn report_attempts_escalate() {
 fn empty_token_attempts_escalate() {
     let mut hub = Hub::new(repo_root());
     let _ = call(&mut hub, 1, "opp_handshake", json!({}));
-    let first = call(&mut hub, 2, "opp_submit_token", json!({ "token": "  " }));
-    let second = call(&mut hub, 3, "opp_submit_token", json!({}));
+    let _ = call(&mut hub, 2, "opp_status", json!({}));
+    let first = call(&mut hub, 3, "opp_submit_token", json!({ "token": "  " }));
+    let second = call(&mut hub, 4, "opp_submit_token", json!({}));
     assert!(first.contains("attempt 1"));
     assert!(second.contains("attempt 2"));
+}
+
+#[test]
+fn the_sequence_is_enforced_end_to_end() {
+    // The drawn-out flow is the contract: a token submitted before the
+    // integration has asked for one is rejected and redirected.
+    let mut hub = Hub::new(repo_root());
+    let _ = call(&mut hub, 1, "opp_handshake", json!({}));
+
+    // Tokens before status are refused.
+    let premature = call(
+        &mut hub,
+        2,
+        "opp_submit_token",
+        json!({ "token": "hunter2" }),
+    );
+    assert!(premature.contains("opp_status first"));
+
+    // The session is still Greeted; the report is still redacted.
+    let redacted = call(&mut hub, 3, "opp_project_report", json!({}));
+    assert!(redacted.contains("verification required"));
+
+    // Only after status does the token land.
+    let _ = call(&mut hub, 4, "opp_status", json!({}));
+    let accepted = call(
+        &mut hub,
+        5,
+        "opp_submit_token",
+        json!({ "token": "hunter2" }),
+    );
+    assert!(accepted.contains("Token accepted"));
+    let report = call(&mut hub, 6, "opp_project_report", json!({}));
+    assert!(report.contains("python"));
+}
+
+#[test]
+fn registry_rejects_tokens_before_the_request() {
+    let registry = Registry::new();
+    let session = registry.open_session();
+    assert!(session.submit_token("early").is_err());
+    session.request_token();
+    assert!(session.submit_token("early").is_ok());
 }
 
 // --- credential discovery ---------------------------------------------------
