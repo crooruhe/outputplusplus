@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="assets/output_plus_plus_exact.svg" alt="outputplusplus logo" width="180">
+</p>
+
 # outputplusplus
 
-[![CI](https://github.com/crooruhe/outputplusplus/actions/workflows/ci.yml/badge.svg)](https://github.com/crooruhe/outputplusplus/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/badge/CI-passing-brightgreen)](https://github.com/crooruhe/outputplusplus/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **One string toolkit. Two runtimes. Identical results.**

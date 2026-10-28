@@ -9,6 +9,7 @@ per [SemVer](https://semver.org).
 ### Changed
 - README restructured as a project overview; all setup, usage, and
   development instructions moved to USAGE.md.
+- README: added the project logo and a static CI badge.
 
 ## [0.3.0] - 2026-10-28
 
