@@ -26,6 +26,11 @@ dependencies = [
     "rich>=13.0",
     "pydantic>=2.0",
     "requests>=2.31",
+    "numpy>=1.26",
+    "pandas>=2.0",
+    "scipy>=1.11",
+    "scikit-learn>=1.3",
+    "matplotlib>=3.6",
 ]
 
 [project.optional-dependencies]
@@ -71,6 +76,11 @@ python_version = "3.10"
 strict = true
 warn_unused_ignores = false
 disallow_subclassing_any = false
+
+[[tool.mypy.overrides]]
+# The science stack is stable enough that stubs are a formality here.
+module = ["matplotlib.*", "sklearn.*", "scipy.*", "pandas.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
