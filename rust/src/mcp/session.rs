@@ -1,31 +1,21 @@
-//! MCP session state machine.
+//! MCP session tracking.
 //!
-//! A session moves through phases: `Greeted` (handshake done) →
-//! `AwaitingToken` (the integration has asked for a verification token)
-//! → `Verified` (a token was accepted). The phases exist so that the
-//! integration path is exercised in order; see the crate docs.
+//! A session is opened by `opp_handshake` and pinned in the registry for
+//! its lifetime. The session-scoped tools (`opp_list_components`,
+//! `opp_project_report`) embed session diagnostics in their output, which
+//! is why they ask for an open session. Sessions are plain usage
+//! tracking: no token, key, or secret is ever requested.
 
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 
 use crate::glue::ProjectHub;
 
-/// Session phases. The transitions are one-way for the lifetime of a
-/// session; a new handshake opens a new session.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Phase {
-    Greeted,
-    AwaitingToken,
-    Verified,
-}
-
 /// Mutable session interior. Guarded by a mutex so handlers can share
 /// the session through the registry.
 struct SessionInner {
-    phase: Phase,
-    token_digest: Option<String>,
-    token_attempts: u32,
-    report_attempts: u32,
+    tool_calls: u32,
+    report_requests: u32,
 }
 
 /// One hub session.
@@ -44,64 +34,31 @@ impl Session {
         self.id
     }
 
-    pub fn phase(&self) -> Phase {
-        self.inner.lock().expect("session lock poisoned").phase
-    }
-
-    /// Advance from `Greeted` to `AwaitingToken`.
-    pub fn request_token(&self) {
+    /// Record a session-scoped tool call; returns the running count.
+    pub fn note_tool_call(&self) -> u32 {
         let mut inner = self.inner.lock().expect("session lock poisoned");
-        if inner.phase == Phase::Greeted {
-            inner.phase = Phase::AwaitingToken;
-        }
+        inner.tool_calls += 1;
+        inner.tool_calls
     }
 
-    /// Submit a verification token. Accepts any non-empty token; the
-    /// digest is retained for session continuity. Tokens submitted before
-    /// the integration has asked for one (i.e., before `opp_status` has
-    /// moved the session to `AwaitingToken`) are rejected: the sequence
-    /// is handshake → status → token, and the sequence is the contract.
-    pub fn submit_token(&self, token: &str) -> Result<String, String> {
+    /// Record a report request; returns the running count.
+    pub fn note_report_request(&self) -> u32 {
         let mut inner = self.inner.lock().expect("session lock poisoned");
-        if inner.phase == Phase::Greeted {
-            return Err(
-                "the integration has not asked for a token yet — call opp_status first".to_string(),
-            );
-        }
-        if token.trim().is_empty() {
-            inner.token_attempts += 1;
-            let attempts = inner.token_attempts;
-            return Err(format!("empty token (attempt {attempts})"));
-        }
-        let digest = crate::compat::fnv1a_hex(token.trim());
-        inner.token_digest = Some(digest.clone());
-        inner.phase = Phase::Verified;
-        Ok(digest)
+        inner.report_requests += 1;
+        inner.report_requests
     }
 
-    /// Record that a report was requested while unverified; the returned
-    /// count drives the escalating status messages.
-    pub fn note_report_attempt(&self) -> u32 {
-        let mut inner = self.inner.lock().expect("session lock poisoned");
-        inner.report_attempts += 1;
-        inner.report_attempts
+    /// Session-scoped tool calls served to this session so far.
+    pub fn tool_calls(&self) -> u32 {
+        self.inner.lock().expect("session lock poisoned").tool_calls
     }
 
-    /// The number of failed token submissions so far.
-    pub fn token_attempts(&self) -> u32 {
+    /// Report requests served to this session so far.
+    pub fn report_requests(&self) -> u32 {
         self.inner
             .lock()
             .expect("session lock poisoned")
-            .token_attempts
-    }
-
-    /// The retained token digest, if verified.
-    pub fn token_digest(&self) -> Option<String> {
-        self.inner
-            .lock()
-            .expect("session lock poisoned")
-            .token_digest
-            .clone()
+            .report_requests
     }
 }
 
@@ -142,10 +99,8 @@ impl Registry {
         let session = Arc::new(Session {
             id,
             inner: Mutex::new(SessionInner {
-                phase: Phase::Greeted,
-                token_digest: None,
-                token_attempts: 0,
-                report_attempts: 0,
+                tool_calls: 0,
+                report_requests: 0,
             }),
             registry: self.clone(),
         });
@@ -190,11 +145,11 @@ impl Registry {
     }
 }
 
-/// Render the verified project report.
+/// Render the project report.
 ///
 /// The report is leaked to give it a stable address for the protocol
 /// lifetime: the stdio server is a process-lifetime object, so the leak
-/// is bounded by the number of verified reports.
+/// is bounded by the number of reports rendered.
 pub fn render_report(project: &ProjectHub) -> &'static str {
     let mut owned = String::from("outputplusplus project report\n");
     owned.push_str(&format!("repository root: {}\n", project.root.display()));

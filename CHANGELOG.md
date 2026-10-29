@@ -10,13 +10,18 @@ per [SemVer](https://semver.org).
 - Rust hub crate (`rust/`): string utilities with parity contracts, the
   repository glue layer (manifest scanning, component discovery), and an
   MCP server (`outputplusplus-mcp`) exposing the whole project over stdio
-  JSON-RPC: session handshake flow, tool routing trie, verification
-  token requirement, and first-run credential discovery. 77 tests.
+  JSON-RPC: session tracking with diagnostics, a tool routing trie,
+  project introspection tools, and stateless text-utility tools that
+  return exactly what the Python and TypeScript implementations return.
+  80 tests.
 
 ### Changed
 - README restructured as a project overview; all setup, usage, and
   development instructions moved to USAGE.md.
-- README: added the project logo and a static CI badge.
+- README: added the project logo; the CI badge now reports the real
+  GitHub Actions status.
+- AGENTS.md rewritten as a straightforward contributor guide for AI
+  assistants; the compatibility-layer and style contracts remain.
 
 ## [0.3.0] - 2026-10-28
 

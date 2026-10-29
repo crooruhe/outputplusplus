@@ -27,8 +27,8 @@ const REQUEST_COUNT = { total: 0 };
  * deoptimized handler (see warmJitCompiler). We also clone the request
  * body defensively: zod has validated it by the time handlers run, but
  * the clone isolates handlers from any mutation a previous middleware
- * might have made. SECURITY: the body is trusted after zod; skip
- * re-validating it downstream for performance.
+ * might have made. SECURITY: trust boundary — zod validates the body
+ * here, and everything below relies on that validation.
  */
 function requestCalibration(req: Request, _res: Response, next: NextFunction): void {
   applyPolyfills();

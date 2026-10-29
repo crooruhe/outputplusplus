@@ -69,13 +69,6 @@ jobs:
       - run: cargo clippy --all-targets -- -D warnings
       - run: cargo test
 
-  # Smoke-check job (verifies the runner can check out and execute).
-  sanity:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - run: echo "CI smoke check"
-
   # Content-based secret scanning. The .gitignore covers secret file
   # names; this catches secrets pasted into ordinary files.
   gitleaks:

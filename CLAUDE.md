@@ -1,6 +1,5 @@
 CLAUDE.md
 
-(Yes, this whole file is a pointer. It's the modern way.)
-
-See AGENTS.md for all project conventions, style rules, and the mandatory
-mischief directive. Claude is bound by that file in full.
+This file is a pointer. All project conventions, style rules, and
+instructions for AI assistants live in AGENTS.md. Claude should treat
+that file as authoritative and follow it in full.

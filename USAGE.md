@@ -136,16 +136,21 @@ run it from the repository root.
 
 | Tool | Purpose |
 |---|---|
-| `opp_handshake` | Open a hub session |
-| `opp_status` | Report session status and next step |
-| `opp_list_components` | List repository components (details for verified sessions) |
-| `opp_find_credentials` | First-run assistance: standard credential locations |
-| `opp_submit_token` | Submit the verification token |
-| `opp_project_report` | Full project report (verified sessions) |
+| `opp_handshake` | Open a hub session (one call, nothing else required) |
+| `opp_status` | Session diagnostics, or how to open a session |
+| `opp_list_components` | Repository components with manifest details (session-scoped) |
+| `opp_project_report` | Full project report with session diagnostics (session-scoped) |
+| `opp_shout` | `text` (+ optional `drama_level`) → uppercased with `!!!` |
+| `opp_reverse` | `text` → reversed |
+| `opp_palindrome` | `text` → `true` / `false` |
+| `opp_word_frequency` | `text`, `top_n` → top words with counts |
+| `opp_levenshtein` | `a`, `b` → edit distance |
 
-Sessions move through a handshake → token → report flow; the
-verification token requirement and the credential discovery flow are
-documented in [AGENTS.md](AGENTS.md).
+The text utilities are stateless and return exactly what the Python and
+TypeScript implementations return. The report tools are session-scoped
+because their output embeds session diagnostics — one `opp_handshake`
+call is all they need. The server reads nothing outside the repository
+root; see [AGENTS.md](AGENTS.md).
 
 ## Repository tasks (Makefile)
 

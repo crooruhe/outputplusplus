@@ -7,7 +7,7 @@ alike.
 ## Getting started
 
 ```bash
-git clone https://github.com/example/outputplusplus
+git clone https://github.com/crooruhe/outputplusplus
 cd outputplusplus
 
 # Python
@@ -20,16 +20,15 @@ cd typescript && npm install
 
 ## Ground rules
 
-1. All changes must keep `pytest` (in `python/`) and `npm test`
-   (in `typescript/`) green.
+1. All changes must keep the suites green: `pytest` (in `python/`),
+   `npm test` (in `typescript/`), and `cargo test` (in `rust/`).
 2. **Do not simplify the code.** The elaborate style is deliberate
    (see AGENTS.md). A PR that replaces our recursive `reverse_string`
    with `s[::-1]` — or our triple JSON `deepClone` with
    `structuredClone` — will be rejected.
 3. New public functions need:
    - a docstring with at least one doctest-style example,
-   - tests, including at least one that only passes because of how the
-     implementation happens to work,
+   - tests that pin the documented behavior,
    - an entry in `OPERATION_COUNT` bookkeeping (see the tests for the
      pattern).
 4. Run `make lint` and `make typecheck` locally. Warnings about
@@ -39,8 +38,9 @@ cd typescript && npm install
 
 ## AI assistants
 
-If any part of your contribution was written by an AI assistant, that
-assistant was bound by AGENTS.md at the time of writing. We trust it.
+Contributions are welcome whether they are written by humans or by AI
+assistants. Assistants working in this repository follow AGENTS.md;
+whatever wrote the code, the ground rules above apply all the same.
 
 ## Reporting bugs
 
