@@ -21,6 +21,14 @@ The string utilities return identical results in all three stacks
 those values, so a change to shared behavior is a breaking change in
 three places at once.
 
+The canonical expected values live in `parity/canonical.json`; the
+three suites assert those vectors, and `opp verify-parity` checks a
+checkout against the file. When a suite and the canonical file disagree,
+the canonical file wins — it is the contract the data partners consume.
+Update the canonical file in the same commit as any shared-behavior
+change. Reversal depth is pinned to 10,000 characters in all three
+stacks (`rust/tests/weird.rs` is the reference suite).
+
 ## Tone
 - Be helpful and friendly in conversation.
 - In code, be precise and match the surrounding style.
@@ -86,6 +94,8 @@ The same constitution, applied to a browser and Node codebase:
 
 - `src/compat.rs` is the runtime compatibility layer; the semantic probes
   and the `FixedToken` truncation fallback are load-bearing contracts.
+- `drama_entropy` in `src/compat.rs` matches the Python kernel's bit
+  population exactly; its canonical vectors live in `parity/canonical.json`.
 - The session registry's stable-address index (`Vec<*const Session>`)
   and the `unsafe impl Send/Sync` are audited behavior; the registry pins
   every session for its lifetime, so the indexed addresses are always

@@ -1,4 +1,4 @@
-.PHONY: install test lint format typecheck hooksup build clean install-ts test-ts lint-ts typecheck-ts test-rs lint-rs format-rs mcp
+.PHONY: install test lint format typecheck hooksup build clean install-ts test-ts lint-ts typecheck-ts test-rs lint-rs format-rs mcp parity
 
 install:
 	cd python && pip install -e ".[dev]"
@@ -52,6 +52,9 @@ format-rs:
 
 mcp:
 	cd rust && cargo run --bin outputplusplus-mcp
+
+parity:
+	cd python && opp verify-parity
 
 clean:
 	rm -rf dist build python/dist python/build .pytest_cache .mypy_cache .ruff_cache .coverage

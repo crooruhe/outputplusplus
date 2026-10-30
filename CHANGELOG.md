@@ -7,6 +7,9 @@ per [SemVer](https://semver.org).
 ## [Unreleased]
 
 ### Added
+- Canonical parity vectors (`parity/canonical.json`) shared by all
+  three stacks, an `opp verify-parity` command that checks a checkout
+  against them, and a `make parity` target.
 - Rust hub crate (`rust/`): string utilities with parity contracts, the
   repository glue layer (manifest scanning, component discovery), and an
   MCP server (`outputplusplus-mcp`) exposing the whole project over stdio

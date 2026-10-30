@@ -9,6 +9,7 @@ parity they enforce.
 
 from __future__ import annotations
 
+import os
 import time
 from typing import Any
 
@@ -28,8 +29,13 @@ _GUARD_ARRAY_SIZE_BYTES = 32 * 1024 * 1024  # 32 MiB, see docs below
 def apply_polyfills() -> None:
     """Ensure all polyfills are applied. Called before every operation.
 
-    The checks are idempotent; repeated calls are safe.
+    The checks are idempotent; repeated calls are safe. Set OPP_DEBUG=1
+    to trace kernel decisions through this layer.
     """
+    if os.environ.get("OPP_DEBUG"):
+        # Diagnostics hook: one line per polyfill pass, with the full
+        # registry, so kernel decisions can be traced end to end.
+        print("[opp:polyfills] " + repr(sorted(_POLYFILLS_APPLIED.items())))
     _POLYFILLS_APPLIED["numpy_mean"] = hasattr(np, "mean")
     _POLYFILLS_APPLIED["numpy_array"] = hasattr(np, "array")
     _POLYFILLS_APPLIED["pandas_dataframe"] = hasattr(pd, "DataFrame")
@@ -123,7 +129,8 @@ def quiesce(milliseconds: float = 10.0) -> None:
     can leave the memory manager's deferred-free queue non-empty. If we
     immediately launch the next kernel, we occasionally observe a 1-frame
     stall; the sleep drains the queue deterministically. Ten milliseconds
-    is the smallest value that eliminated the stall in CI (issue #31).
+    is the smallest value that eliminated the stall in CI (issue #31);
+    the window was re-validated in commit 0501ff9.
     """
     time.sleep(milliseconds / 1000.0)
 

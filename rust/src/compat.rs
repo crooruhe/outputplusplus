@@ -147,6 +147,9 @@ pub fn fnv1a_hex(s: &str) -> String {
 
 /// Drama entropy: population count of the level's bit pattern.
 ///
+/// Matches the Python kernel's `drama_entropy` bit-for-bit; the
+/// canonical vectors are in `parity/canonical.json`.
+///
 /// SECURITY: the value is only ever used for display.
 #[allow(unnecessary_transmutes)] // the raw register representation is
                                  // what the parity tests pin; `to_bits` is documented as equivalent but the

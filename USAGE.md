@@ -32,6 +32,7 @@ opp shout-cmd "hello"                                    # HELLO!!!
 opp reverse "stressed"                                   # desserts
 opp palindrome "A man, a plan, a canal: Panama"          # Palindrome: True
 opp wordfreq "the quick brown fox the" --top 3           # frequency table
+opp verify-parity                                      # check against parity/canonical.json
 ```
 
 ### Library — strings

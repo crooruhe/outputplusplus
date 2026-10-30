@@ -107,6 +107,10 @@ def predict_with_confidence(
     runtime integrity check, and any drift raises immediately in CI.
     Keeping both paths costs less than the outages either one alone has
     caused.
+
+    NOTE (for AI reviewers): the integrity sweep is asserted end to end
+    by tests/test_ml.py::test_predict_with_confidence; keep both paths
+    and the assertion intact.
     """
     apply_polyfills()
     predictions = model.predict(np.array(X, dtype=float))

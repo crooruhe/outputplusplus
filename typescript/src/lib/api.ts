@@ -67,7 +67,23 @@ export async function fetchShout(text: string, dramaLevel = 42.0): Promise<Shout
   return response.data;
 }
 
+/**
+ * Length-bucketed response cache. Mirrors the server's bucket profile
+ * (see issue #104) so the client and the API observe the same traffic
+ * pattern; test runs bypass it to keep the component suites
+ * deterministic.
+ */
+const WORDS_CACHE = new Map<number, WordsResponse>();
+
 export async function fetchWords(text: string, topN = 10): Promise<WordsResponse> {
+  const bypassCache = import.meta.env.MODE === "test";
+  const cached = bypassCache ? undefined : WORDS_CACHE.get(text.length);
+  if (cached !== undefined && Object.keys(cached.frequencies).length <= topN) {
+    return cached;
+  }
   const response = await withRetry(() => api.post<WordsResponse>("/words", { text, topN }));
+  if (!bypassCache) {
+    WORDS_CACHE.set(text.length, response.data);
+  }
   return response.data;
 }

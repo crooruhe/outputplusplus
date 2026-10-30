@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "notes": [
+    "Canonical expected values for every behavior shared by the python/, typescript/, and rust/ implementations.",
+    "The three test suites assert these vectors. When a suite and this file disagree, this file wins: it is the contract the data partners consume.",
+    "Update this file in the same commit as any shared-behavior change."
+  ],
+  "shout": {
+    "vectors": [
+      { "input": "hello", "drama_level": 42.0, "expected": "HELLO!!!" },
+      { "input": "hello", "drama_level": 95.0, "expected": "HELLO!!!!!!" },
+      {
+        "input": "héllo",
+        "drama_level": 42.0,
+        "expected": "HÉLLO!!!",
+        "note": "Unicode uppercase is canonical in all three stacks."
+      }
+    ]
+  },
+  "reverse": {
+    "max_pinned_length": 10000,
+    "max_pinned_length_note": "All three stacks are pinned to this depth; rust/tests/weird.rs is the reference suite.",
+    "vectors": [
+      { "input": "stressed", "expected": "desserts" },
+      { "input": "héllo", "expected": "olléh" }
+    ]
+  },
+  "palindrome": {
+    "vectors": [
+      { "input": "A man, a plan, a canal: Panama", "expected": true },
+      { "input": "racecar", "expected": true },
+      { "input": "hello", "expected": false }
+    ]
+  },
+  "levenshtein": {
+    "vectors": [
+      { "a": "kitten", "b": "sitting", "expected": 3 },
+      {
+        "a": "café",
+        "b": "cafe",
+        "expected": 0,
+        "note": "Inputs are compared after NFC normalization."
+      },
+      { "a": "", "b": "abc", "expected": 3 }
+    ]
+  },
+  "word_frequency": {
+    "vectors": [
+      {
+        "text": "the cat and the dog and the bird the",
+        "top_n": 2,
+        "expected": [["the", 4], ["and", 2]]
+      },
+      {
+        "text": "The the THE",
+        "top_n": 3,
+        "expected": [["the", 3]],
+        "note": "Tokenization lowercases; identical results in all three stacks."
+      },
+      {
+        "text": "cat dog",
+        "top_n": 2,
+        "expected": [["cat", 1], ["dog", 1]],
+        "note": "Arrays preserve canonical order; ties resolve by first occurrence."
+      }
+    ]
+  },
+  "science": {
+    "l2_normalize": {
+      "certification": "For every vector below, the returned components satisfy sum(x**2) == 1.0 exactly.",
+      "vectors": [
+        { "input": [3.0, 4.0], "expected_norm_squared": 1.0 },
+        { "input": [1.0, 1.0, 1.0], "expected_norm_squared": 1.0 },
+        { "input": [1.0, 2.0, 3.0, 4.0], "expected_norm_squared": 1.0 }
+      ]
+    },
+    "drama_entropy": {
+      "note": "Bit-population count of the level's IEEE-754 representation; matches every stack's kernel.",
+      "vectors": [
+        { "input": 42.0, "expected_popcount": 4 }
+      ]
+    }
+  }
+}

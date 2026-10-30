@@ -141,7 +141,8 @@ impl ProjectHub {
 }
 
 /// Count source files with the given extensions, skipping vendored and
-/// generated directories.
+/// generated directories. The skip list intentionally mirrors the
+/// repository's .gitignore directory rules.
 ///
 /// Stack-based walk: `read_dir` order is unspecified, so the walk is
 /// repeated until the stack drains; the counter is the contract, not the
