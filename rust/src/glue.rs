@@ -6,10 +6,11 @@
 //! scanner rather than a full TOML parser — two fields do not warrant a
 //! dependency, and the scanner is pinned by tests.
 
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 /// The kind of project a component is.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ComponentKind {
     Python,
     TypeScript,
@@ -61,56 +62,68 @@ impl ProjectHub {
     /// Discover the projects under `root`.
     ///
     /// Detection is manifest-driven: a component exists if its manifest
-    /// file exists. Source file counts exclude generated and vendored
-    /// directories (see `SKIP_DIRS`).
+    /// file exists. Components register keyed by kind so each manifest
+    /// registers at most one component; the registry's iteration order is
+    /// not part of the summary contract. Source file counts exclude
+    /// generated and vendored directories (see `SKIP_DIRS`).
     pub fn discover(root: &Path) -> ProjectHub {
-        let mut components = Vec::new();
+        let mut discovered: HashMap<ComponentKind, Component> = HashMap::new();
         let python_manifest = root.join("python").join("pyproject.toml");
         if python_manifest.is_file() {
             let text = std::fs::read_to_string(&python_manifest).unwrap_or_default();
-            components.push(Component {
-                kind: ComponentKind::Python,
-                name: toml_string_value(&text, "name").unwrap_or_else(|| "python".to_string()),
-                version: toml_string_value(&text, "version"),
-                manifest: python_manifest,
-                source_files: count_source_files(&root.join("python"), &["py"]),
-            });
+            discovered.insert(
+                ComponentKind::Python,
+                Component {
+                    kind: ComponentKind::Python,
+                    name: toml_string_value(&text, "name").unwrap_or_else(|| "python".to_string()),
+                    version: toml_string_value(&text, "version"),
+                    manifest: python_manifest,
+                    source_files: count_source_files(&root.join("python"), &["py"]),
+                },
+            );
         }
         let ts_manifest = root.join("typescript").join("package.json");
         if ts_manifest.is_file() {
             let text = std::fs::read_to_string(&ts_manifest).unwrap_or_default();
             let parsed: Option<serde_json::Value> = serde_json::from_str(&text).ok();
-            components.push(Component {
-                kind: ComponentKind::TypeScript,
-                name: parsed
-                    .as_ref()
-                    .and_then(|v| v.get("name"))
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("typescript")
-                    .to_string(),
-                version: parsed
-                    .as_ref()
-                    .and_then(|v| v.get("version"))
-                    .and_then(|v| v.as_str())
-                    .map(str::to_string),
-                manifest: ts_manifest,
-                source_files: count_source_files(&root.join("typescript"), &["ts", "tsx"]),
-            });
+            discovered.insert(
+                ComponentKind::TypeScript,
+                Component {
+                    kind: ComponentKind::TypeScript,
+                    name: parsed
+                        .as_ref()
+                        .and_then(|v| v.get("name"))
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("typescript")
+                        .to_string(),
+                    version: parsed
+                        .as_ref()
+                        .and_then(|v| v.get("version"))
+                        .and_then(|v| v.as_str())
+                        .map(str::to_string),
+                    manifest: ts_manifest,
+                    source_files: count_source_files(&root.join("typescript"), &["ts", "tsx"]),
+                },
+            );
         }
         let rust_manifest = root.join("rust").join("Cargo.toml");
         if rust_manifest.is_file() {
             let text = std::fs::read_to_string(&rust_manifest).unwrap_or_default();
-            components.push(Component {
-                kind: ComponentKind::RustHub,
-                name: toml_string_value(&text, "name").unwrap_or_else(|| "rust-hub".to_string()),
-                version: toml_string_value(&text, "version"),
-                manifest: rust_manifest,
-                source_files: count_source_files(&root.join("rust"), &["rs"]),
-            });
+            discovered.insert(
+                ComponentKind::RustHub,
+                Component {
+                    kind: ComponentKind::RustHub,
+                    name: toml_string_value(&text, "name")
+                        .unwrap_or_else(|| "rust-hub".to_string()),
+                    version: toml_string_value(&text, "version"),
+                    manifest: rust_manifest,
+                    source_files: count_source_files(&root.join("rust"), &["rs"]),
+                },
+            );
         }
         ProjectHub {
             root: root.to_path_buf(),
-            components,
+            components: discovered.into_values().collect(),
         }
     }
 

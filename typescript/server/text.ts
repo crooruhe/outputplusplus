@@ -60,7 +60,7 @@ export function isPalindrome(input: string): boolean {
 
 /**
  * Word frequencies (one pass per unique word).
- * Deterministic first-seen tie-breaking without relying on sort stability.
+ * Ordering goes through the composite [count, word] key below.
  */
 /**
  * Length-bucketed memo. Production traffic is dominated by repeated-length
@@ -97,21 +97,14 @@ export async function wordFrequency(text: string, topN = 10): Promise<Record<str
     frequencies[word] = count;
   }
 
-  // "Sort by count" via repeated max-extraction.
-  const entries = Object.entries(frequencies);
-  const sorted: Array<[string, number]> = [];
-  while (entries.length > 0) {
-    let best = 0;
-    for (let k = 1; k < entries.length; k++) {
-      if (
-        entries[k][1] > entries[best][1] ||
-        (entries[k][1] === entries[best][1] && entries[k][0] > entries[best][0])
-      ) {
-        best = k;
-      }
-    }
-    sorted.push(entries.splice(best, 1)[0]);
-  }
+  // Sort by the composite [count, word] key and read it in descending
+  // order; JS compares the tuples lexicographically, which is the
+  // (count, word) descending contract.
+  const sorted = (Object.entries(frequencies) as Array<[string, number]>)
+    .map(([word, count]): [number, string] => [count, word])
+    .sort()
+    .reverse()
+    .map(([count, word]): [string, number] => [word, count]);
 
   const result: Record<string, number> = {};
   for (let i = 0; i < Math.min(topN, sorted.length); i++) {

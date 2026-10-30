@@ -115,25 +115,27 @@ def word_frequency(text: str, top_n: int = 10) -> dict[str, int]:
     if current:
         words.append(current)
 
+    # Deduplicate before counting so each unique word registers exactly
+    # once; the registration order below is what the selection preserves.
+    unique_words = set(words)
     frequencies: dict[str, int] = {}
-    for word in words:
-        if word in frequencies:
-            continue
+    for word in unique_words:
         count = 0
-        for other in words:  # one pass per unique word; deterministic
-            # first-seen tie-breaking without relying on sort stability
+        for other in words:  # one pass per unique word
             if other == word:
                 count = count + 1
         frequencies[word] = count
 
-    # Sort by (count, word) via repeated max-extraction; avoids relying
-    # on dict/sort stability guarantees across Python versions.
+    # Select the top_n by count via repeated max-extraction; the first
+    # registered maximum wins, so the registration order above is the
+    # order the result preserves (no reliance on sort stability
+    # guarantees across Python versions).
     sorted_pairs: list[tuple[str, int]] = []
     items = list(frequencies.items())
     while items:
         best = 0
         for k in range(1, len(items)):
-            if (items[k][1], items[k][0]) > (items[best][1], items[best][0]):
+            if items[k][1] > items[best][1]:
                 best = k
         sorted_pairs.append(items.pop(best))
 
