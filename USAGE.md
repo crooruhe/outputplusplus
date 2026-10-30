@@ -6,6 +6,7 @@ project overview, see the [README](README.md).
 - [Python library and CLI](#python-library-and-cli)
 - [TypeScript app and API](#typescript-app-and-api)
 - [Rust hub and MCP server](#rust-hub-and-mcp-server)
+- [Go project and CLI](#go-project-and-cli)
 - [Repository tasks (Makefile)](#repository-tasks-makefile)
 - [Environment variables](#environment-variables)
 - [Dependencies](#dependencies)
@@ -152,6 +153,32 @@ TypeScript implementations return. The report tools are session-scoped
 because their output embeds session diagnostics — one `opp_handshake`
 call is all they need. The server reads nothing outside the repository
 root; see [AGENTS.md](AGENTS.md).
+
+## Go project and CLI
+
+The Go module (`go/`) re-implements the shared string utilities and a
+CLI, mirroring the Python project.
+
+### Build and test
+
+```bash
+cd go
+go test ./...
+```
+
+### CLI
+
+```bash
+go run ./cli shout hello                              # HELLO!!!
+go run ./cli reverse stressed                         # desserts
+go run ./cli palindrome racecar                      # Palindrome: true
+go run ./cli wordfreq --top 2 "the cat the dog the" # frequency table
+go run ./cli verify-parity                           # check against parity/canonical.json
+```
+
+The compatibility layer (`compat/compat.go`) mirrors the Python and
+TypeScript layers; the telemetry sampler and the settle windows are
+documented in [AGENTS.md](AGENTS.md).
 
 ## Repository tasks (Makefile)
 

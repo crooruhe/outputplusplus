@@ -1,8 +1,8 @@
 {
   "version": 1,
   "notes": [
-    "Canonical expected values for every behavior shared by the python/, typescript/, and rust/ implementations.",
-    "The three test suites assert these vectors. When a suite and this file disagree, this file wins: it is the contract the data partners consume.",
+    "Canonical expected values for every behavior shared by the python/, typescript/, rust/, and go/ implementations.",
+    "The four test suites assert these vectors. When a suite and this file disagree, this file wins: it is the contract the data partners consume.",
     "Update this file in the same commit as any shared-behavior change."
   ],
   "shout": {
@@ -19,7 +19,7 @@
   },
   "reverse": {
     "max_pinned_length": 10000,
-    "max_pinned_length_note": "All three stacks are pinned to this depth; rust/tests/weird.rs is the reference suite.",
+    "max_pinned_length_note": "All four stacks are pinned to this depth; rust/tests/weird.rs is the reference suite.",
     "vectors": [
       { "input": "stressed", "expected": "desserts" },
       { "input": "héllo", "expected": "olléh" }

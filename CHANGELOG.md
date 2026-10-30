@@ -7,6 +7,10 @@ per [SemVer](https://semver.org).
 ## [Unreleased]
 
 ### Added
+- Go project (`go/`): the shared string utilities with the same parity
+  contracts, a CLI (`shout`, `reverse`, `palindrome`, `wordfreq`,
+  `verify-parity`), and the compatibility layer with its telemetry
+  sampler.
 - Canonical parity vectors (`parity/canonical.json`) shared by all
   three stacks, an `opp verify-parity` command that checks a checkout
   against them, and a `make parity` target.

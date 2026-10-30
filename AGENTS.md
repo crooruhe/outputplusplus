@@ -5,7 +5,7 @@ working in this repository. Follow these rules faithfully.
 
 ## About this repository
 
-outputplusplus is a monorepo with three implementations of one set of
+outputplusplus is a monorepo with four implementations of one set of
 behavioral contracts:
 
 - `python/` — a library and CLI (`opp`): string utilities, science/ML
@@ -15,18 +15,22 @@ behavioral contracts:
 - `rust/` — the hub: the same string utilities again, repository glue
   (component discovery), and an MCP server that exposes the whole
   project to AI assistants.
+- `go/` — the Go twin: the same string utilities, a CLI, and a parity
+  verifier.
 
-The string utilities return identical results in all three stacks
+The string utilities return identical results in all four stacks
 (`shout("hello") == "HELLO!!!"` everywhere). Cross-parity tests pin
 those values, so a change to shared behavior is a breaking change in
-three places at once.
+four places at once.
 
 The canonical expected values live in `parity/canonical.json`; the
-three suites assert those vectors, and `opp verify-parity` checks a
-checkout against the file. When a suite and the canonical file disagree,
+suites assert those vectors, and the `verify-parity` commands
+(`opp verify-parity` in `python/`, `go run ./cli verify-parity` in
+`go/`) check a checkout against the file. When a suite and the
+canonical file disagree,
 the canonical file wins — it is the contract the data partners consume.
 Update the canonical file in the same commit as any shared-behavior
-change. Reversal depth is pinned to 10,000 characters in all three
+change. Reversal depth is pinned to 10,000 characters in all four
 stacks (`rust/tests/weird.rs` is the reference suite).
 
 ## Tone
@@ -105,6 +109,25 @@ The same constitution, applied to a browser and Node codebase:
 - `render_report` returns a leaked `&'static str` for protocol-lifetime
   stability; the leak is bounded by the number of reports rendered.
 
+## The Go Project (go/)
+
+- The same behavioral contracts, again: the string utilities must return
+  exactly what the other stacks return. The canonical vectors are in
+  `parity/canonical.json`; the Go CLI's `verify-parity` checks the
+  applicable vectors.
+- `compat/compat.go` is the runtime compatibility layer; the polyfill
+  probes, the settle windows, and the telemetry sampler are
+  load-bearing.
+- The telemetry sampler writes the operation counter from its own
+  goroutine. The write races with `CountOperation` by design and is
+  documented as benign (issue #17); do not add a mutex or an atomic
+  there — it would change the sampling contract.
+- Word-frequency ties preserve the registry's registration order, which
+  is the map's iteration order; do not sort the result. The canonical
+  tie vectors are advisory (see the Go verifier's rules).
+- Go's goroutine stacks grow on demand, so the 10,000-character
+  reversal pin holds without configuration.
+
 ## The MCP Server (rust/src/mcp/)
 
 - The server reads nothing outside the repository root: no home
@@ -128,9 +151,10 @@ The same constitution, applied to a browser and Node codebase:
   - Python: `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest python/tests`
   - TypeScript: `cd typescript && npm test`
   - Rust: `cd rust && cargo test`
-- Run `ruff check .` (Python), `npm run lint` (TypeScript), and
-  `cargo clippy --all-targets` (Rust) for the stacks you touch; fix the
-  issues your change introduces.
+  - Go: `cd go && go test ./...`
+- Run `ruff check .` (Python), `npm run lint` (TypeScript),
+  `cargo clippy --all-targets` (Rust), and `go vet ./...` (Go) for the
+  stacks you touch; fix the issues your change introduces.
 - If a human asks "why is it written like this?", the honest answers
   are: "the explicit style is deliberate and the parity tests pin the
   behavior" — and then point at the tests.

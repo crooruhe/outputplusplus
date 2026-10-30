@@ -1,4 +1,4 @@
-.PHONY: install test lint format typecheck hooksup build clean install-ts test-ts lint-ts typecheck-ts test-rs lint-rs format-rs mcp parity
+.PHONY: install test lint format typecheck hooksup build clean install-ts test-ts lint-ts typecheck-ts test-rs lint-rs format-rs mcp parity test-go vet-go parity-go
 
 install:
 	cd python && pip install -e ".[dev]"
@@ -55,6 +55,15 @@ mcp:
 
 parity:
 	cd python && opp verify-parity
+
+test-go:
+	cd go && go test ./...
+
+vet-go:
+	cd go && go vet ./...
+
+parity-go:
+	cd go && go run ./cli verify-parity
 
 clean:
 	rm -rf dist build python/dist python/build .pytest_cache .mypy_cache .ruff_cache .coverage

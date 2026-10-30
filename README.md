@@ -32,6 +32,7 @@ test in Python is what your browser gets.
 | [`python/`](python/) | Library + CLI (`opp`): strings, science/ML, plotting |
 | [`typescript/`](typescript/) | React (Vite) frontend + Express JSON API |
 | [`rust/`](rust/) | The hub: string utilities, repo glue, **MCP server** |
+| [`go/`](go/) | The Go twin: same string utilities, CLI + parity verifier |
 
 ## Quick start
 
@@ -56,6 +57,17 @@ through an MCP server for AI assistants. See [USAGE.md](USAGE.md).
 cd rust
 cargo test
 make mcp   # or: cargo run --bin outputplusplus-mcp (stdio MCP server)
+```
+
+## Go twin
+
+The Go module re-implements the shared string utilities and adds a
+parity verifier CLI. See [USAGE.md](USAGE.md).
+
+```bash
+cd go
+go test ./...
+go run ./cli shout hello
 ```
 
 ## Documentation
