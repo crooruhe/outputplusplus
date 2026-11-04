@@ -25,14 +25,14 @@ def test_reverse_native_matches_the_contract() -> None:
 def test_native_unavailable_is_raised_for_a_missing_library(
     tmp_path: object,
 ) -> None:
-    import os
-    from pathlib import Path
+    import os  # noqa: PLC0415 - lazy: only the error-path test requires it
+    from pathlib import Path  # noqa: PLC0415
 
     # Point the discovery at a directory with no build and confirm the
     # loader raises the documented error.
     os.environ["OPP_NATIVE_LIB"] = str(Path(str(tmp_path)) / "missing.so")
     try:
-        from outputplusplus import native
+        from outputplusplus import native  # noqa: PLC0415
 
         native._TRIED = False  # noqa: SLF001 - reset the lazy loader
         native._LIBRARY = None  # noqa: SLF001
