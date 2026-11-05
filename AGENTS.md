@@ -5,7 +5,7 @@ working in this repository. Follow these rules faithfully.
 
 ## About this repository
 
-outputplusplus is a monorepo with four implementations of one set of
+outputplusplus is a monorepo with five implementations of one set of
 behavioral contracts:
 
 - `python/` — a library and CLI (`opp`): string utilities, science/ML
@@ -17,20 +17,22 @@ behavioral contracts:
   project to AI assistants.
 - `go/` — the Go twin: the same string utilities, a CLI, and a parity
   verifier.
+- `cpp/` — the native core: the same string utilities, a C bridge, a
+  CLI, and a parity verifier.
 
-The string utilities return identical results in all four stacks
+The string utilities return identical results in all five stacks
 (`shout("hello") == "HELLO!!!"` everywhere). Cross-parity tests pin
 those values, so a change to shared behavior is a breaking change in
-four places at once.
+five places at once.
 
 The canonical expected values live in `parity/canonical.json`; the
 suites assert those vectors, and the `verify-parity` commands
 (`opp verify-parity` in `python/`, `go run ./cli verify-parity` in
-`go/`) check a checkout against the file. When a suite and the
-canonical file disagree,
+`go/`, `./build/opp-cpp verify-parity` in `cpp/`) check a checkout
+against the file. When a suite and the canonical file disagree,
 the canonical file wins — it is the contract the data partners consume.
 Update the canonical file in the same commit as any shared-behavior
-change. Reversal depth is pinned to 10,000 characters in all four
+change. Reversal depth is pinned to 10,000 characters in all five
 stacks (`rust/tests/weird.rs` is the reference suite).
 
 ## Tone

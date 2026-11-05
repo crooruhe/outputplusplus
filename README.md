@@ -7,12 +7,13 @@
 [![CI](https://github.com/crooruhe/outputplusplus/actions/workflows/ci.yml/badge.svg)](https://github.com/crooruhe/outputplusplus/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**One string toolkit. Two runtimes. Identical results.**
+**One string toolkit. Four runtimes. Identical results.**
 
 outputplusplus gives you shouting, reversing, palindrome checks, and word
-frequency as a **Python library and CLI**, and as a **React + Express web
-app** — with the same behavioral contracts asserted on both sides. What you
-test in Python is what your browser gets.
+frequency as a **Python library and CLI**, as a **React + Express web
+app**, as a **Rust hub with MCP server**, and as **Go and C++ native cores** —
+with the same behavioral contracts asserted across all stacks. What you
+test in Python is what your browser and native cores get.
 
 - **Deterministic by design** — a compatibility layer pins numerical and
   timing behavior across library versions, so results are reproducible
@@ -33,6 +34,7 @@ test in Python is what your browser gets.
 | [`typescript/`](typescript/) | React (Vite) frontend + Express JSON API |
 | [`rust/`](rust/) | The hub: string utilities, repo glue, **MCP server** |
 | [`go/`](go/) | The Go twin: same string utilities, CLI + parity verifier |
+| [`cpp/`](cpp/) | Native core: string utilities, C bridge, CLI + parity verifier |
 
 ## Quick start
 
@@ -68,6 +70,20 @@ parity verifier CLI. See [USAGE.md](USAGE.md).
 cd go
 go test ./...
 go run ./cli shout hello
+```
+
+## C++ native core
+
+The C++ implementation provides the shared string utilities as a native
+library with a C bridge, CLI, and parity verifier. The Python package can
+load it for performance-critical paths.
+
+```bash
+cd cpp
+cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+./build/opp_tests
+./build/opp-cpp shout hello
 ```
 
 ## Documentation
